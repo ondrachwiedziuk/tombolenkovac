@@ -69,7 +69,12 @@ def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
     draw.text((int((cell_width * DPI * MM_TO_INCH - los_width) // 2), 125), los, fill='black', font=font)
 
     # Logo
-    logo_path = pkg_resources.resource_filename('Tombolenkovac', 'data/logo.png')
+    try:
+        logo_path = pkg_resources.resource_filename('Tombolenkovac', 'data/logo.png')
+    except ModuleNotFoundError:
+        location = os.path.realpath(
+            os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        logo_path = os.path.join(location, 'data/logo.png')
     logo = Image.open(logo_path)
     logo = logo.resize((200, 200))
     image.paste(logo, ((int(cell_width * DPI * MM_TO_INCH) // 2 - 300), 350))
