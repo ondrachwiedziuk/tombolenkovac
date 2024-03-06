@@ -4,5 +4,5 @@ env
 __pycache__
 build
 env
-Tombolenkovac.egg-info
+tombolenkovac.egg-info
 tombolenkovac/__pycache__

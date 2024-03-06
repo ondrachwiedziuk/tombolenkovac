@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='Tombolenkovac',
+    name='tombolenkovac',
     version='0.2',
-    packages=find_packages(),
+    packages=find_packages('tombolenkovac'),
     description='Create, draw and check tickets for a tombola.',
     author='Ondřej Chwiedziuk',
     author_email='ondra@chwiedziuk.cz',
@@ -19,8 +19,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'tombolenkovac = tombolenkovac.main:main'
-        ]
+            'tombolenkovac = tombolenkovac.main:main',
+        ],
     },
     package_data={'': ['data/*.png']},
 )

@@ -55,9 +55,10 @@ def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
     image.paste(code, (0, int(cell_height * DPI * MM_TO_INCH) - code.height))
 
     # Style
-    top = Image.open(f"{style}.png")
-    top = top.resize((int(cell_width * DPI * MM_TO_INCH), int(top.height * (cell_width * DPI * MM_TO_INCH) / top.width)))
-    image.paste(top, (0, 0))
+    if os.path.exists(f"{style}.png"):
+        top = Image.open(f"{style}.png")
+        top = top.resize((int(cell_width * DPI * MM_TO_INCH), int(top.height * (cell_width * DPI * MM_TO_INCH) / top.width)))
+        image.paste(top, (0, 0))
 
     # Text
     draw = ImageDraw.Draw(image)
@@ -77,14 +78,14 @@ def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
         logo_path = os.path.join(location, 'data/logo.png')
     logo = Image.open(logo_path)
     logo = logo.resize((200, 200))
-    image.paste(logo, ((int(cell_width * DPI * MM_TO_INCH) // 2 - 300), 350))
+    image.paste(logo, ((int(cell_width * DPI * MM_TO_INCH) // 2 - 310), 350))
 
     # {year - 1995}. ples MFF UK
     font = ImageFont.truetype("OpenSans-Bold.ttf", 100)
     ples = f'{year - 1995}. ples'
     draw.text((int(cell_width * DPI * MM_TO_INCH) // 2 - 75, 310), ples, fill='black', font=font)
     ples = 'MFF UK'
-    draw.text((int(cell_width * DPI * MM_TO_INCH) // 2 - 75, 430), ples, fill='black', font=font)
+    draw.text((int(cell_width * DPI * MM_TO_INCH) // 2 - 75, 440), ples, fill='black', font=font)
 
     return image
 
@@ -113,6 +114,7 @@ def make_A4(year: int, start: int, stop: int, style: str) -> None:
     for i in range(0, GRID_WIDTH + 1):
         for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_HEIGHT * cell_height) * DPI * MM_TO_INCH), 10):
             draw.line([(int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j), (int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j+5)], fill=dotted_color)
+
     for i in range(0, GRID_HEIGHT + 1):
         for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_WIDTH * cell_width) * DPI * MM_TO_INCH), 10):
             draw.line([(j, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH)), (j+5, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH))], fill=dotted_color)
