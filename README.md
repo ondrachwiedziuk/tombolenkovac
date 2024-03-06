@@ -2,6 +2,11 @@
 
 ## Installation
 
+For installation, use
+```bash
+python -m pip install tombolenkovac
+```
+
 ## Usage
 
 To generate tickets, run
