@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='tombolenkovac',
-    version='0.2',
-    packages=find_packages('tombolenkovac'),
+    version='0.2.0',
+    packages=['tombolenkovac'],
     description='Create, draw and check tickets for a tombola.',
     author='Ondřej Chwiedziuk',
     author_email='ondra@chwiedziuk.cz',

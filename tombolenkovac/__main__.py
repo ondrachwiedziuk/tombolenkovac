@@ -1,4 +1,4 @@
-from main import main
+import tombolenkovac
 
 if __name__ == '__main__':
-    main()
+    tombolenkovac.main.main()

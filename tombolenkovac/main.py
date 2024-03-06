@@ -17,8 +17,8 @@
 
 import argparse
 import sys
-import generate
-import draw
+import tombolenkovac.generate as generate
+import tombolenkovac.draw as draw
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='Tombolenkovac')
@@ -26,7 +26,7 @@ def main() -> None:
     parser.add_argument('--draw', action='store_true', help='Draw winning tickets')
     parser.add_argument('--check', action='store_true', help='Check if the ticket is winning')
     parser.add_argument('--clean', action='store_true', help='Clean the directory')
-    parser.add_argument('--version', action='version', version='%(prog)s 0.2')
+    parser.add_argument('--version', action='version', version='%(prog)s 0.2.0')
 
     args = parser.parse_args()
 
