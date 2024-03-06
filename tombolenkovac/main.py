@@ -39,7 +39,7 @@ def main():
     elif args.clean:
         generate.clean()
     elif args.draw:
-        draw.draw_tickets()
+        draw.draw_tickets('prizes.csv')
     elif args.check:
         draw.check_ticket('prizes.csv')
     else:

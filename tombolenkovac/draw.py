@@ -1,9 +1,21 @@
 from fpdf import FPDF
 
-def draw_tickets():
+
+def number_of_winning_tickets(prizes_file):
+    # Count the number of winning tickets
+    count = 0
+    with open(prizes_file, "r", encoding="utf-8") as file:
+        for line in file:
+            count += 1
+    return count
+
+
+def draw_tickets(prizes_file):
     win = []
     i = 1
-    while True:
+    # Draw winning tickets
+    win_count = number_of_winning_tickets(prizes_file)
+    for i in range(1, win_count + 1):
         ticket = input(f"{i}-th ticket: ")
         if ticket == "exit":
             break
