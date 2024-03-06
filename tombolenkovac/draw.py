@@ -1,16 +1,16 @@
 from fpdf import FPDF
 
 
-def number_of_winning_tickets(prizes_file):
+def number_of_winning_tickets(prizes_file: str) -> int:
     # Count the number of winning tickets
     count = 0
     with open(prizes_file, "r", encoding="utf-8") as file:
-        for line in file:
+        for _ in file:
             count += 1
     return count
 
 
-def draw_tickets(prizes_file):
+def draw_tickets(prizes_file: str) -> None:
     win = []
     i = 1
     # Draw winning tickets
@@ -28,7 +28,7 @@ def draw_tickets(prizes_file):
     file.close()
     make_pdf(win)
 
-def make_pdf(win):
+def make_pdf(win: list) -> None:
     # Make pdf of winning tickets using pypdf2
     pdf = FPDF()
     pdf.add_page()
@@ -40,7 +40,7 @@ def make_pdf(win):
     print("Winning tickets saved to winning_tickets.pdf")
 
 
-def check_ticket(prizes_file):
+def check_ticket(prizes_file: str) -> None:
     # load csv
     prizes = {}
     with open(prizes_file, "r", encoding="utf-8") as file:

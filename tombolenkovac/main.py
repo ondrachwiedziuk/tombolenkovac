@@ -20,7 +20,7 @@ import sys
 import generate
 import draw
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Tombolenkovac')
     parser.add_argument('--gen', action='store_true', help='Generate tickets')
     parser.add_argument('--draw', action='store_true', help='Draw winning tickets')

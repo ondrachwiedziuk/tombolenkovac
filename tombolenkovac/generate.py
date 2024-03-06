@@ -32,7 +32,7 @@ available_height = A4_HEIGHT - 2 * MARGIN
 cell_width = available_width / GRID_WIDTH
 cell_height = available_height / GRID_HEIGHT
 
-def ean_gen(year, start, stop):
+def ean_gen(year: int, start: int, stop: int) -> list[str]:
     ean = []
     for i in range(start, stop + 1):
         ean.append(str(year)[2:] + str(i).zfill(4) + "0")
@@ -40,14 +40,14 @@ def ean_gen(year, start, stop):
     return ean
 
 
-def generate_ean(ean):
+def generate_ean(ean: list[str]) -> None:
     for i in ean:
         # EAN8 without checksum
         code = barcode.EAN8(i, writer=ImageWriter())
         code.save(f'barcode_{i}')
 
 
-def create_ticket(ean, style, year=YEAR):
+def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
     image = Image.new('RGB', (int(cell_width * DPI * MM_TO_INCH), int(cell_height * DPI * MM_TO_INCH)), color = (255, 255, 255))
     # Code
     code = Image.open(f'barcode_{ean}.png')
@@ -84,7 +84,7 @@ def create_ticket(ean, style, year=YEAR):
     return image
 
 
-def make_A4(year, start, stop, style):
+def make_A4(year: int, start: int, stop: int, style: str) -> None:
     ean = ean_gen(year, start, stop)
     generate_ean(ean)
     
@@ -115,7 +115,7 @@ def make_A4(year, start, stop, style):
     tickets_grid.save(f'tickets_{year}_{start}_{stop}.pdf')
 
 
-def make_tickets(year, start, stop, style):
+def make_tickets(year: int, start: int, stop: int, style: str) -> None:
     # On one page there are 25 tickets
     for i in range(start, stop, 25):
         make_A4(year, i, min(i + 24, stop), style)
@@ -126,7 +126,7 @@ def make_tickets(year, start, stop, style):
     clean()
 
 
-def concatenate():
+def concatenate() -> None:
     # Concatenate all the pdfs
     files = os.listdir()
     pdfs = []
@@ -142,7 +142,7 @@ def concatenate():
     merger.close()
 
 
-def clean():
+def clean() -> None:
     # delete all barcodes in the folder
     files = os.listdir()
     for file in files:
