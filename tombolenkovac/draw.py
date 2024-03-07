@@ -2,83 +2,75 @@ from fpdf import FPDF
 import csv
 
 
-def number_of_winning_tickets(prizes_file: str) -> int:
-    # Count the number of winning tickets
-    count = 0
+def number_from_ticket(ticket: str) -> int:
+    return int(ticket[2:6])
+
+
+def draw_tickets(prizes_file: str = 'prizes.csv', start: int = 1) -> None:
     with open(prizes_file, "r", encoding="utf-8") as file:
-        for _ in file:
-            count += 1
-    return count
-
-
-def draw_tickets(prizes_file: str, start: int = 1) -> None:
-    win = []
-    # Draw winning tickets
-    win_count = number_of_winning_tickets(prizes_file)
-    for i in range(start, win_count + 1):
-        ticket = input(f"{i}-th ticket: ")
+        reader = csv.reader(file)
+        data = list(reader)
+    for i in range(start, len(data)):
+        ticket = input(f"{i}-th winning ticket: ")
         if ticket == "exit":
             break
         else:
-            print(f"Drawing ticket {ticket}")
-            win.append(ticket)
-    print("Drawing finished")
-    file = open("winning_tickets.txt", "w", encoding="utf-8")
-    file.write("winning_tickets.txt", win)
-    file.close()
-    make_pdf(win)
+            data[i][2] = ticket
+    with open(prizes_file, "w", newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerows(data)
 
 
-def make_pdf(win: list) -> None:
+def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf') -> None:
     # Make pdf of winning tickets using pypdf2
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     pdf.cell(200, 10, txt="Winning tickets", ln=True, align="C")
-    for i in win:
-        pdf.cell(200, 10, txt=i, ln=True, align="C")
-    pdf.output("winning_tickets.pdf")
-    print("Winning tickets saved to winning_tickets.pdf")
-
-
-def check_ticket(prizes_file: str) -> None:
-    # load csv
-    prizes = {}
     with open(prizes_file, "r", encoding="utf-8") as file:
-        for line in file:
-            ticket, prize = line.strip().split(",")
-            prizes[ticket] = prize
-    # check if the ticket is winning
+        reader = csv.reader(file)
+        data = list(reader)
+    for row in data:
+        pdf.cell(200, 10, txt=number_from_ticket(row[2]), ln=True, align="C")
+    pdf.output(pdf_path)
+    print(f"Winning tickets saved to {pdf_path}")
+
+
+def check_ticket(prizes_file: str = 'prizes.csv') -> None:
+    # load csv
+    with open(prizes_file, "r", encoding="utf-8") as file:
+        reader = csv.reader(file)
+        data = list(reader)
     while True:
         ticket = input("Enter the ticket number: ")
         if ticket == "exit":
             break
+        for row in data:
+            if row[2] == ticket:
+                print(f"Ticket {number_from_ticket(ticket)} won {row[0]}: {row[1]}")
+                break
         else:
-            print(f"Checking ticket {ticket}")
-            if ticket in prizes:
-                print(f"Ticket {ticket} won {prizes[ticket]}")
-            else:
-                print(f"Ticket {ticket} did not win")
+            print(f"Ticket {number_from_ticket(ticket)} did not win")
 
 
-def generate_prizes(mode):
+def generate_prizes(mode, prizes_file='prizes.csv'):
     # generate prizes file
     if mode == 'c':
         # create prizes file
-        with open('prizes.csv', 'w', newline='', encoding='utf-8') as file:
+        with open(prizes_file, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow(['ticket', 'prize'])
+            writer.writerow(['index', 'prize', 'ticket'])
             i = 1
             while True:
                 prize = input('Enter the prize: ')
                 if prize == 'exit':
                     break
-                writer.writerow([i, prize])
+                writer.writerow([i, prize, None])
                 i += 1
 
     elif mode == 'a':
         # edit prizes file
-        with open('prizes.csv', 'a', newline='', encoding='utf-8') as file:
+        with open(prizes_file, 'a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             reader = csv.reader(file)
             i = file.readlines()[-1].split(',')[0]
@@ -91,18 +83,18 @@ def generate_prizes(mode):
 
     elif mode == 'e':
         # edit prizes file
-        with open('prizes.csv', 'r', newline='', encoding='utf-8') as file:
+        with open(prizes_file, 'r', newline='', encoding='utf-8') as file:
             reader = csv.reader(file)
             data = list(reader)
         while True:
-            ticket = input('Enter the ticket number: ')
-            if ticket == 'exit':
+            i = input('Enter the index: ')
+            if i == 'exit':
                 break
             prize = input('Enter the prize: ')
             for row in data:
-                if row[0] == ticket:
+                if row[0] == i:
                     row[1] = prize
-        with open('prizes.csv', 'w', newline='', encoding='utf-8') as file:
+        with open(prizes_file, 'w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerows(data)
     else:
