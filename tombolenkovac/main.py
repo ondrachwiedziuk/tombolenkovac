@@ -27,6 +27,7 @@ def main() -> None:
     parser.add_argument('--check', action='store_true', help='Check if the ticket is winning')
     parser.add_argument('--clean', action='store_true', help='Clean the directory')
     parser.add_argument('--version', action='version', version='%(prog)s 0.2.1')
+    parser.add_argument('--prizes', action='store_true', help='Create prizes file')
 
     args = parser.parse_args()
 
@@ -39,9 +40,15 @@ def main() -> None:
     elif args.clean:
         generate.clean()
     elif args.draw:
-        draw.draw_tickets('prizes.csv')
+        start = int(input('Enter the number of first drawn prize (blank from 1): ').strip() or 1)
+        draw.draw_tickets('prizes.csv', start)
     elif args.check:
         draw.check_ticket('prizes.csv')
+    elif args.prizes:
+        # TODO: create prizes file, or edit it
+        # also creates a pdf of tickets of winnning numbers
+        mode = input('Enter the mode (c for create, a for append, e for edit, default create): ') or 'c'
+        draw.generate_prizes(mode)
     else:
         print('No command given, try --help for help.')
         sys.exit(1)
