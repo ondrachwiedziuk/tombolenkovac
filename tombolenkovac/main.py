@@ -26,7 +26,7 @@ def main() -> None:
     parser.add_argument('--draw', action='store_true', help='Draw winning tickets')
     parser.add_argument('--check', action='store_true', help='Check if the ticket is winning')
     parser.add_argument('--clean', action='store_true', help='Clean the directory')
-    parser.add_argument('--version', action='version', version='%(prog)s 0.2.1')
+    parser.add_argument('--version', action='version', version='%(prog)s 0.2.2')
     parser.add_argument('--prizes', action='store_true', help='Create prizes file')
     parser.add_argument('--prize-path', type=str, help='Path to the prizes file', default='prizes.csv')
     parser.add_argument('--pdf-path', type=str, help='Path to the pdf file', default='winning_tickets.pdf')
