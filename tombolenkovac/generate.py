@@ -24,6 +24,12 @@ MM_TO_INCH = 0.0393701
 
 YEAR = 2024
 
+LINE_COLOR = (100, 100, 100)  # Gray color
+LINE_WIDTH =8
+LINE_LENGTH = 15
+LINE_SPACING = 30
+
+
 # Calculate the available width and height for the grid
 available_width = A4_WIDTH - 2 * MARGIN
 available_height = A4_HEIGHT - 2 * MARGIN
@@ -110,14 +116,13 @@ def make_A4(year: int, start: int, stop: int, style: str) -> None:
 
     # Add dotted lines to the grid
     draw = ImageDraw.Draw(tickets_grid)
-    dotted_color = (150, 150, 150)  # Light gray color
     for i in range(0, GRID_WIDTH + 1):
-        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_HEIGHT * cell_height) * DPI * MM_TO_INCH), 10):
-            draw.line([(int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j), (int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j+5)], fill=dotted_color)
+        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_HEIGHT * cell_height) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
+            draw.line([(int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j), (int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j + LINE_LENGTH)], fill=LINE_COLOR)
 
     for i in range(0, GRID_HEIGHT + 1):
-        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_WIDTH * cell_width) * DPI * MM_TO_INCH), 10):
-            draw.line([(j, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH)), (j+5, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH))], fill=dotted_color)
+        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_WIDTH * cell_width) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
+            draw.line([(j, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH)), (j + LINE_LENGTH, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH))], fill=LINE_COLOR)
     # Save it as pdf
     tickets_grid.save(f'tickets_{year}_{start}_{stop}.pdf')
 

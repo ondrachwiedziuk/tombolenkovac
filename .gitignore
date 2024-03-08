@@ -7,3 +7,4 @@ env
 tombolenkovac.egg-info
 tombolenkovac/__pycache__
 dist
+prizes.csv

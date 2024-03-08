@@ -21,7 +21,7 @@ def draw_tickets(prizes_file: str = 'prizes.csv', start: int = 1) -> None:
         writer.writerows(data)
 
 
-def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf') -> None:
+def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf', start: int = 1) -> None:
     # Make pdf of winning tickets using pypdf2
     pdf = FPDF()
     pdf.add_page()
@@ -30,8 +30,8 @@ def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.p
     with open(prizes_file, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         data = list(reader)
-    for row in data:
-        pdf.cell(200, 10, txt=number_from_ticket(row[2]), ln=True, align="C")
+    for i in range(start, len(data)):
+        pdf.cell(200, 10, txt=str(number_from_ticket(data[i][2])), ln=True, align="C")
     pdf.output(pdf_path)
     print(f"Winning tickets saved to {pdf_path}")
 
