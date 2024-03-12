@@ -1,8 +1,16 @@
+"""Module for generating tickets
+
+This module contains functions for generating tickets.
+
+Raises:
+    ValueError: Year must be in format YYYY
+"""
+
+import os
 import barcode
 from barcode.writer import ImageWriter
 from PIL import Image, ImageDraw, ImageFont
 from PyPDF2 import PdfMerger
-import os
 import pkg_resources
 
 
@@ -25,20 +33,30 @@ MM_TO_INCH = 0.0393701
 YEAR = 2024
 
 LINE_COLOR = (100, 100, 100)  # Gray color
-LINE_WIDTH =8
+LINE_WIDTH = 8
 LINE_LENGTH = 15
 LINE_SPACING = 30
 
 
 # Calculate the available width and height for the grid
-available_width = A4_WIDTH - 2 * MARGIN
-available_height = A4_HEIGHT - 2 * MARGIN
+AVAILABLE_WIDTH = A4_WIDTH - 2 * MARGIN
+AVAILABLE_HEIGHT = A4_HEIGHT - 2 * MARGIN
 
 # Calculate cell dimensions
-cell_width = available_width / GRID_WIDTH
-cell_height = available_height / GRID_HEIGHT
+CELL_WIDTH = AVAILABLE_WIDTH / GRID_WIDTH
+CELL_HEIGHT = AVAILABLE_HEIGHT / GRID_HEIGHT
 
 def ean_gen(year: int, start: int, stop: int) -> list[str]:
+    """Generate EAN8 codes in format YYNNNN0X
+
+    Args:
+        year (int): Year of the event
+        start (int): Number of the first ticket
+        stop (int): Number of the last ticket
+
+    Returns:
+        list[str]: List of EAN8 codes
+    """
     ean = []
     for i in range(start, stop + 1):
         ean.append(str(year)[2:] + str(i).zfill(4) + "0")
@@ -47,6 +65,11 @@ def ean_gen(year: int, start: int, stop: int) -> list[str]:
 
 
 def generate_ean(ean: list[str]) -> None:
+    """Generate EAN8 barcodes
+
+    Args:
+        ean (list[str]): List of EAN8 codes
+    """
     for i in ean:
         # EAN8 without checksum
         code = barcode.EAN8(i, writer=ImageWriter())
@@ -54,16 +77,26 @@ def generate_ean(ean: list[str]) -> None:
 
 
 def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
-    image = Image.new('RGB', (int(cell_width * DPI * MM_TO_INCH), int(cell_height * DPI * MM_TO_INCH)), color = (255, 255, 255))
+    """Create a ticket with a barcode, style and year
+
+    Args:
+        ean (str): EAN8 code
+        style (str): Style of the ticket
+        year (int, optional): Year of the event. Defaults to YEAR.
+
+    Returns:
+        Image: Image of the ticket
+    """
+    image = Image.new('RGB', (int(CELL_WIDTH * DPI * MM_TO_INCH), int(CELL_HEIGHT * DPI * MM_TO_INCH)), color = (255, 255, 255))
     # Code
     code = Image.open(f'barcode_{ean}.png')
-    code = code.resize((int(cell_width * DPI * MM_TO_INCH), int(code.height * (cell_width * DPI * MM_TO_INCH) / code.width)))
-    image.paste(code, (0, int(cell_height * DPI * MM_TO_INCH) - code.height))
+    code = code.resize((int(CELL_WIDTH * DPI * MM_TO_INCH), int(code.height * (CELL_WIDTH * DPI * MM_TO_INCH) / code.width)))
+    image.paste(code, (0, int(CELL_HEIGHT * DPI * MM_TO_INCH) - code.height))
 
     # Style
     if os.path.exists(f"{style}.png"):
         top = Image.open(f"{style}.png")
-        top = top.resize((int(cell_width * DPI * MM_TO_INCH), int(top.height * (cell_width * DPI * MM_TO_INCH) / top.width)))
+        top = top.resize((int(CELL_WIDTH * DPI * MM_TO_INCH), int(top.height * (CELL_WIDTH * DPI * MM_TO_INCH) / top.width)))
         image.paste(top, (0, 0))
 
     # Text
@@ -73,7 +106,7 @@ def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
     # Los number
     los = f'Los {int(ean[2:6])}'
     los_width = draw.textlength(los, font=font)
-    draw.text((int((cell_width * DPI * MM_TO_INCH - los_width) // 2), 125), los, fill='black', font=font)
+    draw.text((int((CELL_WIDTH * DPI * MM_TO_INCH - los_width) // 2), 125), los, fill='black', font=font)
 
     # Logo
     try:
@@ -84,26 +117,37 @@ def create_ticket(ean: str, style: str, year:int=YEAR) -> Image:
         logo_path = os.path.join(location, 'data/logo.png')
     logo = Image.open(logo_path)
     logo = logo.resize((200, 200))
-    image.paste(logo, ((int(cell_width * DPI * MM_TO_INCH) // 2 - 310), 350))
+    image.paste(logo, ((int(CELL_WIDTH * DPI * MM_TO_INCH) // 2 - 310), 350))
 
     # {year - 1995}. ples MFF UK
     font = ImageFont.truetype("OpenSans-Bold.ttf", 100)
     ples = f'{year - 1995}. ples'
-    draw.text((int(cell_width * DPI * MM_TO_INCH) // 2 - 75, 310), ples, fill='black', font=font)
+    draw.text((int(CELL_WIDTH * DPI * MM_TO_INCH) // 2 - 75, 310), ples, fill='black', font=font)
     ples = 'MFF UK'
-    draw.text((int(cell_width * DPI * MM_TO_INCH) // 2 - 75, 440), ples, fill='black', font=font)
+    draw.text((int(CELL_WIDTH * DPI * MM_TO_INCH) // 2 - 75, 440), ples, fill='black', font=font)
 
     return image
 
 
 def make_A4(year: int, start: int, stop: int, style: str) -> None:
+    """Make A4 grid of tickets
+
+    Args:
+        year (int): Year of the event
+        start (int): Number of the first ticket
+        stop (int): Number of the last ticket
+        style (str): Style of the ticket
+
+    Raises:
+        ValueError: Year must be in format YYYY
+    """
+    if len(str(year)) != 4:
+        raise ValueError("Year must be in format YYYY")
+
     ean = ean_gen(year, start, stop)
     generate_ean(ean)
     
-    # Make A4 grid of tickets
-    tickets = []
-    for i in ean:
-        tickets.append(create_ticket(i, style, year))
+    tickets = [create_ticket(i, style, year) for i in ean]
 
     # Create A4 grid
     tickets_grid = Image.new('RGB', (int(A4_WIDTH * DPI * MM_TO_INCH), int(A4_HEIGHT * DPI * MM_TO_INCH)), color = (255, 255, 255))
@@ -112,26 +156,44 @@ def make_A4(year: int, start: int, stop: int, style: str) -> None:
             index = i * GRID_WIDTH + j
             if index >= len(tickets):
                 break
-            tickets_grid.paste(tickets[index], (int(MARGIN * DPI * MM_TO_INCH + j * cell_width * DPI * MM_TO_INCH), int(MARGIN * DPI * MM_TO_INCH + i * cell_height * DPI * MM_TO_INCH)))
+            tickets_grid.paste(tickets[index], (int(MARGIN * DPI * MM_TO_INCH + j * CELL_WIDTH * DPI * MM_TO_INCH), int(MARGIN * DPI * MM_TO_INCH + i * CELL_HEIGHT * DPI * MM_TO_INCH)))
 
     # Add dotted lines to the grid
     draw = ImageDraw.Draw(tickets_grid)
-    for i in range(0, GRID_WIDTH + 1):
-        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_HEIGHT * cell_height) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
-            draw.line([(int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j), (int((MARGIN + i * cell_width) * DPI * MM_TO_INCH), j + LINE_LENGTH)], fill=LINE_COLOR)
+    lines(draw)
 
-    for i in range(0, GRID_HEIGHT + 1):
-        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_WIDTH * cell_width) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
-            draw.line([(j, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH)), (j + LINE_LENGTH, int((MARGIN + i * cell_height) * DPI * MM_TO_INCH))], fill=LINE_COLOR)
     # Save it as pdf
     tickets_grid.save(f'tickets_{year}_{start}_{stop}.pdf')
 
 
+def lines(draw: ImageDraw) -> None:
+    """Add dotted lines to the grid
+
+    Args:
+        draw (ImageDraw): ImageDraw object
+    """
+    for i in range(0, GRID_WIDTH + 1):
+        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_HEIGHT * CELL_HEIGHT) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
+            draw.line([(int((MARGIN + i * CELL_WIDTH) * DPI * MM_TO_INCH), j), (int((MARGIN + i * CELL_WIDTH) * DPI * MM_TO_INCH), j + LINE_LENGTH)], fill=LINE_COLOR)
+
+    for i in range(0, GRID_HEIGHT + 1):
+        for j in range(int(MARGIN * DPI * MM_TO_INCH), int((MARGIN + GRID_WIDTH * CELL_WIDTH) * DPI * MM_TO_INCH), LINE_SPACING + LINE_WIDTH):
+            draw.line([(j, int((MARGIN + i * CELL_HEIGHT) * DPI * MM_TO_INCH)), (j + LINE_LENGTH, int((MARGIN + i * CELL_HEIGHT) * DPI * MM_TO_INCH))], fill=LINE_COLOR)
+
+
 def make_tickets(year: int, start: int, stop: int, style: str) -> None:
+    """Make tickets
+
+    Args:
+        year (int): Year of the event
+        start (int): Number of the first ticket
+        stop (int): Number of the last ticket
+        style (str): Style of the ticket
+    """
     # On one page there are 25 tickets
     for i in range(start, stop, 25):
         make_A4(year, i, min(i + 24, stop), style)
-        print(f"Page {i // 25 + 1} out of {stop // 25} done")
+        print(f"Page {i // 25 + 1} out of {(stop + ((25 - stop) % 25)) // 25} done")
 
     concatenate()
 
@@ -139,7 +201,8 @@ def make_tickets(year: int, start: int, stop: int, style: str) -> None:
 
 
 def concatenate() -> None:
-    # Concatenate all the pdfs
+    """Concatenate all pdfs to one
+    """
     files = os.listdir()
     pdfs = []
     for file in files:
@@ -155,7 +218,8 @@ def concatenate() -> None:
 
 
 def clean() -> None:
-    # delete all barcodes in the folder
+    """Clean the directory
+    """
     files = os.listdir()
     for file in files:
         if file.startswith('barcode_'):

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='tombolenkovac',
-    version='0.2.2',
+    version='0.2.4',
     packages=['tombolenkovac'],
     description='Create, draw and check tickets for a tombola.',
     author='Ondřej Chwiedziuk',
