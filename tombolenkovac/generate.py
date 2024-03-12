@@ -7,6 +7,8 @@ Raises:
 """
 # TODO: Add config file for logo, font, grid size, etc.
 # TODO: Make the code more reusable in tags.py to avoid code duplication
+# TODO: Make better list of winners
+# TODO: Finish the tags.py
 import os
 import barcode
 from barcode.writer import ImageWriter

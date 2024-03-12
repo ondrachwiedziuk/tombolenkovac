@@ -18,43 +18,53 @@ def number_from_ticket(ticket: str) -> int:
     return int(ticket[2:6])
 
 
-def draw_tickets(prizes_file: str = 'prizes.csv', start: int = 1) -> None:
+def draw_tickets(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf', start: int = 1) -> None:
     """Draw winning tickets
 
     Args:
         prizes_file (str, optional): Path to the prizes file. Defaults to 'prizes.csv'.
+        pdf_path (str): Path to the pdf file.
         start (int, optional): Number of first drawn prize. Defaults to 1.
     """
     with open(prizes_file, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         data = list(reader)
+    end = len(data)
     for i in range(start, len(data)):
         ticket = input(f"{i}-th winning ticket: ")
         if ticket == "exit":
+            end = i
             break
         else:
             data[i][2] = ticket
+
     with open(prizes_file, "w", newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(data)
 
+    make_pdf(prizes_file, pdf_path, start, end)
 
-def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf', start: int = 1) -> None:
+
+def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.pdf', start: int = 1, end = None) -> None:
     """Make pdf with winning tickets
 
     Args:
         prizes_file (str, optional): Path to the prizes file. Defaults to 'prizes.csv'.
         pdf_path (str, optional): Path to the pdf file. Defaults to 'winning_tickets.pdf'.
         start (int, optional): Number of first drawn prize. Defaults to 1.
+        end (int, optional): Number of last drawn prize. Defaults to None.
     """
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt="Winning tickets", ln=True, align="C")
+    pdf.cell(200, 10, txt="Výherní lístky", ln=True, align="C")
     with open(prizes_file, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         data = list(reader)
-    for i in range(start, len(data)):
+    if end is None:
+        end = len(data)
+    for i in range(start, end):
+        print(f"Drawing {i} out of {end - 1}")
         pdf.cell(200, 10, txt=str(number_from_ticket(data[i][2])), ln=True, align="C")
     pdf.output(pdf_path)
     print(f"Winning tickets saved to {pdf_path}")
@@ -134,16 +144,16 @@ def append(prizes_file: str = 'prizes.csv') -> None:
     Args:
         prizes_file (str, optional): Path to the prizes file. Defaults to 'prizes.csv'.
     """
+    with open(prizes_file, 'r', encoding='utf-8') as file:
+        i = sum(1 for _ in file)
     with open(prizes_file, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        reader = csv.reader(file)
-        i = len(list(reader))
         while True:
             prize = input('Enter the prize: ')
             if prize == 'exit':
                 break
+            writer.writerow([i, prize, None])
             i += 1
-            writer.writerow([i, prize])
 
 
 def edit(prizes_file: str = 'prizes.csv') -> None:

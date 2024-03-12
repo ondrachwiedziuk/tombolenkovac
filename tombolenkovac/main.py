@@ -38,14 +38,13 @@ def main() -> None:
 
     elif args.draw:
         start = int(input('Enter the number of first drawn prize (blank from 1): ').strip() or 1)
-        draw.draw_tickets(args.prize_path, start)
-        draw.make_pdf(args.prize_path, args.pdf_path, start)
+        draw.draw_tickets(args.prize_path, args.pdf_path, start)
 
     elif args.check:
         draw.check_ticket(args.prize_path)
 
     elif args.prizes:
-        mode = input('Enter the mode (default create): ') or 'c'
+        mode = input('Enter the mode (default append): ') or 'a'
         draw.generate_prizes(mode, args.prize_path)
     
     elif args.tags:
