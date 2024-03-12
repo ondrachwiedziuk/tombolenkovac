@@ -8,6 +8,7 @@ import argparse
 import sys
 import tombolenkovac.generate as generate
 import tombolenkovac.draw as draw
+# import tombolenkovac.tags as tags
 
 def main() -> None:
     """CLI app for Tombolenkovac
@@ -21,6 +22,7 @@ def main() -> None:
     parser.add_argument('--prizes', action='store_true', help='Create prizes file')
     parser.add_argument('--prize-path', type=str, help='Path to the prizes file', default='prizes.csv')
     parser.add_argument('--pdf-path', type=str, help='Path to the pdf file', default='winning_tickets.pdf')
+    parser.add_argument('--tags', action='store_true', help='Make tags')
 
     args = parser.parse_args()
 
@@ -45,6 +47,14 @@ def main() -> None:
     elif args.prizes:
         mode = input('Enter the mode (default create): ') or 'c'
         draw.generate_prizes(mode, args.prize_path)
+    
+    elif args.tags:
+        print("This function is not yet implemented.")
+
+        # start = int(input('Enter the start number: '))
+        # stop = int(input('Enter the stop number: '))
+        # tags.make_tags(start, stop)
+        # generate.clean()
 
     else:
         print('No command given, try --help for help.')

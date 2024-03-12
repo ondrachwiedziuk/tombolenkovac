@@ -210,4 +210,3 @@ def insert(prizes_file: str = 'prizes.csv') -> None:
     with open(prizes_file, 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerows(data)
-    

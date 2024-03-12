@@ -5,7 +5,8 @@ This module contains functions for generating tickets.
 Raises:
     ValueError: Year must be in format YYYY
 """
-
+# TODO: Add config file for logo, font, grid size, etc.
+# TODO: Make the code more reusable in tags.py to avoid code duplication
 import os
 import barcode
 from barcode.writer import ImageWriter
@@ -227,4 +228,6 @@ def clean() -> None:
         if file.startswith('ticket_'):
             os.remove(file)
         if file.startswith('tickets_'):
+            os.remove(file)
+        if file.startswith('tags_'):
             os.remove(file)
