@@ -48,3 +48,17 @@ To check if ticket won, run
 tombolenkovac --check
 ```
 and scan the ticket. It will return the number of prize, or it says it is not a winning ticket.
+
+## TODOs
+
+ - Handle when try to edit prizes file that does not exist.
+
+ - Add config file for logo, font, grid size, etc.
+
+ - Make the code more reusable in tags.py to avoid code duplication.
+
+ - Make better list of winners.
+
+ - Finish the tags.py.
+
+ - Add GUI.
