@@ -20,6 +20,7 @@ def main() -> None:
     parser.add_argument('--clean', action='store_true', help='Clean the directory')
     parser.add_argument('--version', action='version', version='%(prog)s 0.2.4')
     parser.add_argument('--prizes', action='store_true', help='Create prizes file')
+    parser.add_argument('--winners', action='store_true', help='Create winners file')
     parser.add_argument('--prize-path', type=str, help='Path to the prizes file', default='prizes.csv')
     parser.add_argument('--pdf-path', type=str, help='Path to the pdf file', default='winning_tickets.pdf')
     parser.add_argument('--tags', action='store_true', help='Make tags')
@@ -46,6 +47,10 @@ def main() -> None:
     elif args.prizes:
         mode = input('Enter the mode (default append): ') or 'a'
         draw.generate_prizes(mode, args.prize_path)
+
+    elif args.winners:
+        start = int(input('Enter the start number: '))
+        draw.make_pdf(args.prize_path, args.pdf_path, start)
     
     elif args.tags:
         print("This function is not yet implemented.")

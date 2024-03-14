@@ -54,18 +54,23 @@ def make_pdf(prizes_file: str = 'prizes.csv', pdf_path: str = 'winning_tickets.p
         start (int, optional): Number of first drawn prize. Defaults to 1.
         end (int, optional): Number of last drawn prize. Defaults to None.
     """
-    pdf = FPDF()
+    pdf = FPDF('L', 'mm', 'A4')  # Create a landscape A4 page
     pdf.add_page()
+    pdf.set_font("Arial", size=20)
+    pdf.cell(0, 11, txt="Výherní lístky", ln=True, align="C")
     pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt="Výherní lístky", ln=True, align="C")
     with open(prizes_file, "r", encoding="utf-8") as file:
         reader = csv.reader(file)
         data = list(reader)
     if end is None:
         end = len(data)
+    cell_width = (pdf.w - 10) / 11
+    cell_height = (pdf.h - 20) / 16  # Subtract 20 to leave space for the title
     for i in range(start, end):
-        print(f"Drawing {i} out of {end - 1}")
-        pdf.cell(200, 10, txt=str(number_from_ticket(data[i][2])), ln=True, align="C")
+        row = (i - start) // 11
+        col = (i - start) % 11
+        pdf.set_xy(5 + col * cell_width, 20 + row * cell_height)  # Set position for the cell
+        pdf.cell(cell_width, cell_height, txt=str(number_from_ticket(data[i][2])), border=1, align="C")
     pdf.output(pdf_path)
     print(f"Winning tickets saved to {pdf_path}")
 
